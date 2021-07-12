@@ -6,31 +6,46 @@ services:
     build:
       context: ./php
       dockerfile: Dockerfile
-    container_name: php
     restart: unless-stopped
     tty: true
     working_dir: /var/www
     volumes:
       - ./code:/var/www
+    networks:
+      my_network:
+        ipv4_address: ${PHP_IP}
   
   nginx:
     build:
       context: ./nginx
-    container_name: nginx
+    image: laravel-app-nginx
     depends_on:
       - php
     volumes:
       - ./nginx/sites:/etc/nginx/conf.d:ro
       - ./certificate/ssl:/etc/nginx/ssl:ro,delegated
       - ./code:/var/www:ro,delegated
-    # networks:
-    #   snapx-network:
-    #     ipv4_address: ${NGINX_IP}
+    networks:
+      my_network:
+        ipv4_address: ${NGINX_IP}
+
+  mysql:
+    build:
+      context: ./mysql
+    restart: unless-stopped
+    tty: true
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      my_network:
+        ipv4_address: ${MYSQL_IP}
 
   certificate:
     build:
       context: ./certificate
-    container_name: certificate
+
     restart: unless-stopped
     tty: true
     volumes:
@@ -41,7 +56,17 @@ services:
       context: ./npm
     restart: unless-stopped
     tty: true
-    container_name: npm
     working_dir: /var/www
     volumes:
       - ./code:/var/www
+
+volumes:
+  dbdata:
+    driver: local
+
+networks:
+  my_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${SUBNET_IP}/16

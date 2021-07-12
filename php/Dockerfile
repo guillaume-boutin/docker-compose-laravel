@@ -14,6 +14,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -q \
       curl \
       git \
       zip unzip \
+      nano \
     && install-php-extensions \
       bcmath \
       bz2 \
@@ -35,7 +36,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -q \
       zip \
       sockets \
       pdo_sqlsrv \
-      sqlsrv
+      sqlsrv \
+      mailparse \
+      pcntl
 
 # RUN apt-get update && apt-get install -y \
 #     libmagickwand-dev --no-install-recommends \
