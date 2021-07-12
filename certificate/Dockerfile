@@ -1,19 +1,18 @@
-FROM nginx:stable-alpine
+FROM alpine:3.14
+
+RUN addgroup -g 1000 cert
+RUN adduser -u 1000 -G cert -h /home/cert -D cert
 
 RUN apk add acf-openssl
 
-ARG UID=1000
-ARG GID=1000
 RUN echo http://dl-2.alpinelinux.org/alpine/edge/community/ >> /etc/apk/repositories && \
     apk --no-cache add shadow
-RUN usermod -u ${UID} nginx && groupmod -g ${GID} nginx
-
-RUN mkdir /etc/nginx/ssl
-RUN chown -R nginx:nginx /etc/nginx/ssl
 
 COPY ./create.sh /usr/local/bin/create
 RUN chmod 775 /usr/local/bin/create
 
-USER root
+USER cert
 
-WORKDIR /etc/nginx
+RUN mkdir /home/cert/ssl
+
+WORKDIR /home/cert

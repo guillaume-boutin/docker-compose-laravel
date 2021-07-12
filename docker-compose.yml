@@ -34,7 +34,7 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
-      - ./certificate/ssl:/etc/nginx/ssl
+      - ./certificate/ssl:/home/cert/ssl
   
   npm:
     build:

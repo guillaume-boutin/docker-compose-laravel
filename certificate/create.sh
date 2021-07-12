@@ -9,12 +9,8 @@ DOMAIN=$1
     echo "Development"; \
     echo $DOMAIN; \
     echo "support@$DOMAIN"; \
-} | openssl req -newkey rsa:2048 -nodes -keyout /etc/nginx/ssl/$DOMAIN.pem -x509 -days 5000 -out /etc/nginx/ssl/$DOMAIN.crt
+} | openssl req -newkey rsa:2048 -nodes -keyout /home/cert/ssl/$DOMAIN.pem -x509 -days 5000 -out /home/cert/ssl/$DOMAIN.crt
 
-openssl pkcs12 -inkey /etc/nginx/ssl/$DOMAIN.pem -in /etc/nginx/ssl/$DOMAIN.crt -export -out /etc/nginx/ssl/$DOMAIN.p12 -password pass:secret
+openssl pkcs12 -inkey /home/cert/ssl/$DOMAIN.pem -in /home/cert/ssl/$DOMAIN.crt -export -out /home/cert/ssl/$DOMAIN.p12 -password pass:secret
 
 echo ""
-
-chown nginx:nginx /etc/nginx/ssl/$DOMAIN.pem
-chown nginx:nginx /etc/nginx/ssl/$DOMAIN.crt
-chown nginx:nginx /etc/nginx/ssl/$DOMAIN.p12
