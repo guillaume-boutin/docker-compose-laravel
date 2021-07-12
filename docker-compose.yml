@@ -2,7 +2,6 @@ version: '3.7'
 
 services:
 
-  # php-fpm
   php:
     build:
       context: ./php
@@ -10,6 +9,39 @@ services:
     container_name: php
     restart: unless-stopped
     tty: true
+    working_dir: /var/www
+    volumes:
+      - ./code:/var/www
+  
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx
+    depends_on:
+      - php
+    volumes:
+      - ./nginx/sites:/etc/nginx/conf.d:ro
+      - ./certificate/ssl:/etc/nginx/ssl:ro,delegated
+      - ./code:/var/www:ro,delegated
+    # networks:
+    #   snapx-network:
+    #     ipv4_address: ${NGINX_IP}
+
+  certificate:
+    build:
+      context: ./certificate
+    container_name: certificate
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./certificate/ssl:/etc/nginx/ssl
+  
+  npm:
+    build:
+      context: ./npm
+    restart: unless-stopped
+    tty: true
+    container_name: npm
     working_dir: /var/www
     volumes:
       - ./code:/var/www
