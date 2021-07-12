@@ -13,6 +13,4 @@ RUN chmod 775 /usr/local/bin/create
 
 USER cert
 
-RUN mkdir /home/cert/ssl
-
 WORKDIR /home/cert

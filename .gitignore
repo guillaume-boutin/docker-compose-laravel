@@ -1,3 +1,5 @@
 /certificate/ssl
 /code/*
+/nginx/sites/*
+!/nginx/sites/site.conf.example
 .env

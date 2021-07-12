@@ -45,7 +45,6 @@ services:
   certificate:
     build:
       context: ./certificate
-
     restart: unless-stopped
     tty: true
     volumes:
