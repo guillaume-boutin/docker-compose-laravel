@@ -13,9 +13,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -q \
     && DEBIAN_FRONTEND=noninteractive apt-get install -qq -y \
       curl \
       git \
-      zip unzip \
+      zip \
+      unzip \
       nano \
-    && install-php-extensions \
+      ghostscript
+
+RUN install-php-extensions \
       bcmath \
       bz2 \
       calendar \
@@ -40,11 +43,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -q \
       mailparse \
       pcntl
 
-# RUN apt-get update && apt-get install -y \
-#     libmagickwand-dev --no-install-recommends \
-#     && pecl install imagick \
-# 	&& docker-php-ext-enable imagick
-
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install composer
@@ -54,12 +52,18 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
 
-# # Copy application folder
-# COPY ../code/ /var/www
-
 # Copy existing permissions from folder to docker
 COPY --chown=www:www . /var/www
 RUN chown -R www-data:www-data /var/www
+
+#upload
+RUN echo "file_uploads = On" >> /usr/local/etc/php/conf.d/uploads.ini
+RUN echo "memory_limit = 100M" >> /usr/local/etc/php/conf.d/uploads.ini
+RUN echo "upload_max_filesize = 100M" >> /usr/local/etc/php/conf.d/uploads.ini
+RUN echo "post_max_size = 100M" >> /usr/local/etc/php/conf.d/uploads.ini
+
+# Enable read|write on PDF
+RUN sed -i 's/domain="coder" rights="none" pattern="PDF"/domain="coder" rights="read|write" pattern="PDF"/g' /etc/ImageMagick-6/policy.xml
 
 USER www
 
